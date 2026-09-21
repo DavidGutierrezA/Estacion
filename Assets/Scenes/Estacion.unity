@@ -3111,7 +3111,7 @@ Light:
   serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 0.5
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3154,7 +3154,7 @@ Light:
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_ColorTemperature: 5000
+  m_ColorTemperature: 3861
   m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
@@ -5626,8 +5626,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 718630336}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.46174863, y: 0, z: 0, w: 0.8870109}
-  m_LocalPosition: {x: 0.23, y: 15.65, z: 31.45}
+  m_LocalRotation: {x: 0.37864852, y: 0, z: 0, w: 0.92554057}
+  m_LocalPosition: {x: 0.23, y: 12.65, z: 32.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9495,7 +9495,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1244968460
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11748,9 +11748,9 @@ MonoBehaviour:
   - nombre: 2026
     materiales:
     - tag: Fachada
-      material: {fileID: 6233630578763010701, guid: 8a3588b63bfdc6946b96a88e768f07b4, type: 3}
+      material: {fileID: 5982734436777604119, guid: 8a3588b63bfdc6946b96a88e768f07b4, type: 3}
     - tag: Estructura
-      material: {fileID: -1799652246355506216, guid: 8a3588b63bfdc6946b96a88e768f07b4, type: 3}
+      material: {fileID: 6233630578763010701, guid: 8a3588b63bfdc6946b96a88e768f07b4, type: 3}
     activar:
     - {fileID: 5706441858489042559}
     desactivar:
@@ -12804,7 +12804,7 @@ MonoBehaviour:
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
-  FollowOffset: {x: 0, y: 15, z: -5.5}
+  FollowOffset: {x: 0, y: 12, z: -4.66}
 --- !u!114 &1623245199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12856,13 +12856,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1623245197}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.46174863, y: 0, z: 0, w: 0.8870109}
-  m_LocalPosition: {x: 0.23, y: 15.65, z: 31.45}
+  m_LocalRotation: {x: 0.37864852, y: 0, z: 0, w: 0.92554057}
+  m_LocalPosition: {x: 0.23, y: 12.65, z: 32.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 55, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 44.5, y: 0, z: 0}
 --- !u!1 &1628690415
 GameObject:
   m_ObjectHideFlags: 0
