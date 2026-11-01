@@ -30,6 +30,12 @@ public class EpocaManager : MonoBehaviour
     [Header("Estado inicial")]
     [SerializeField] private int epocaActual = 0;
 
+    // Para la interfaz (SelectorEpocaUI)
+    public int Actual => epocaActual;
+    public int Cantidad => epocas.Count;
+    public string NombreDe(int i) => (i >= 0 && i < epocas.Count) ? epocas[i].nombre : "";
+    public event System.Action<int> AlCambiar;
+
     private void Start()
     {
         if (epocas.Count > 0) AplicarEpoca(epocaActual);
@@ -48,6 +54,11 @@ public class EpocaManager : MonoBehaviour
         epocaActual = indice;
         Epoca e = epocas[indice];
 
+        // primero se activan los objetos de la epoca, para que tambien reciban sus materiales
+        if (e.activar != null)
+            foreach (GameObject go in e.activar)
+                if (go != null) go.SetActive(true);
+
         if (e.materiales != null)
         {
             foreach (CambioMaterial cm in e.materiales)
@@ -63,13 +74,11 @@ public class EpocaManager : MonoBehaviour
             }
         }
 
-        if (e.activar != null)
-            foreach (GameObject go in e.activar)
-                if (go != null) go.SetActive(true);
-
         if (e.desactivar != null)
             foreach (GameObject go in e.desactivar)
                 if (go != null) go.SetActive(false);
+
+        AlCambiar?.Invoke(epocaActual);
     }
 
     private void OnMouseDown()

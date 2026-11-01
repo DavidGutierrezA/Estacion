@@ -28,6 +28,12 @@ public class POI : MonoBehaviour
             POIManager.Instance.PlayerEntered(this);
     }
 
+    // Si el POI desaparece (cambio de epoca) con el jugador encima, se quita el aviso.
+    private void OnDisable()
+    {
+        if (POIManager.Instance != null) POIManager.Instance.PlayerExited(this);
+    }
+
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag(playerTag))

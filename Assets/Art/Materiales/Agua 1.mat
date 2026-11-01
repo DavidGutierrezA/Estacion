@@ -26,7 +26,9 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _ALPHAPREMULTIPLY_ON
+  - _NORMALMAP
   - _RECEIVE_SHADOWS_OFF
+  - _SPECULAR_SETUP
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -48,7 +50,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: f5c76106dbe9c6445838e23860eb0b1c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -106,7 +108,7 @@ Material:
     - _AlphaToMask: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BumpScale: 1
+    - _BumpScale: 0.55
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
@@ -119,24 +121,24 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.94
     - _GlossyReflections: 1
-    - _Metallic: 0.95
+    - _Metallic: 0.05
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadows: 0
-    - _Smoothness: 0.8
+    - _Smoothness: 0.92
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 1
-    - _WorkflowMode: 1
+    - _WorkflowMode: 0
     - _XRMotionVectorsPass: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.48452914, g: 0.70141065, b: 0.7673755, a: 0.77254903}
-    - _Color: {r: 0.48452914, g: 0.70141065, b: 0.7673755, a: 0.77254903}
+    - _BaseColor: {r: 0.24, g: 0.46, b: 0.56, a: 0.78}
+    - _Color: {r: 0.23999995, g: 0.45999992, b: 0.56, a: 0.78}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
-    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SpecColor: {r: 0.227451, g: 0.32941177, b: 0.44705886, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -17,6 +17,8 @@ public class POIManager : MonoBehaviour
     public TMP_Text descriptionText;
     public TMP_Text sourceText;
     public Image photoImage;
+    [Tooltip("Se muestra cuando el POI todavia no tiene foto asignada.")]
+    public GameObject fotoPendiente;
 
     [Header("Opciones")]
     public bool pauseWhileOpen = true;
@@ -35,6 +37,7 @@ public class POIManager : MonoBehaviour
     {
         var kb = Keyboard.current;
         if (kb == null) return;
+        if (PantallaInstrucciones.Abierta) return;   // no abrir POIs encima de las instrucciones
 
         if (!panelOpen && current != null && kb.eKey.wasPressedThisFrame)
             OpenPanel(current);
@@ -61,7 +64,14 @@ public class POIManager : MonoBehaviour
         if (titleText != null) titleText.text = poi.title;
         if (descriptionText != null) descriptionText.text = poi.description;
         if (sourceText != null) sourceText.text = poi.source;
-        if (photoImage != null && poi.photo != null) photoImage.sprite = poi.photo;
+        bool hayFoto = poi.photo != null;
+        if (photoImage != null)
+        {
+            photoImage.sprite = poi.photo;
+            photoImage.preserveAspect = true;
+            photoImage.gameObject.SetActive(hayFoto);
+        }
+        if (fotoPendiente != null) fotoPendiente.SetActive(!hayFoto);
 
         if (panel != null) panel.SetActive(true);
         if (indicator != null) indicator.SetActive(false);

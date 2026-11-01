@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+    <title>{{{ PRODUCT_NAME }}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #172630; }
+      #unity-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; background: #172630; outline: none; }
+
+      /* ---------- Pantalla de carga ---------- */
+      #carga {
+        position: fixed; inset: 0; z-index: 10;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: radial-gradient(ellipse at 50% 30%, #2b4250 0%, #1f313c 45%, #15222b 100%);
+        font-family: 'Nunito', 'Segoe UI', Arial, sans-serif; color: #f1ece4;
+        transition: opacity .7s ease;
+      }
+      #carga.oculta { opacity: 0; pointer-events: none; }
+      .vidrio {
+        position: absolute; width: 280px; height: 300px; border-radius: 56px;
+        top: 50%; left: 50%; transform: translate(-50%, -78%);
+        background: rgba(255,255,255,.07); box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+      }
+      .cabecera { position: relative; display: flex; flex-direction: column; align-items: center; }
+      .icono {
+        width: 66px; height: 66px; border-radius: 16px; background: #2a4a5a;
+        display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
+        box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      }
+      h1 {
+        font-family: 'Bree Serif', Georgia, serif; font-weight: 400; margin: 0;
+        font-size: clamp(26px, 4.2vw, 38px); letter-spacing: .3px; color: #f6f1e8;
+        text-shadow: 0 2px 0 rgba(0,0,0,.25);
+      }
+      .sub { margin-top: 6px; font-size: 15px; font-weight: 700; letter-spacing: .6px; color: #a9bcc6; }
+
+      .progreso { position: relative; width: min(560px, 84vw); margin-top: 38px; }
+      .barra { height: 15px; border-radius: 10px; background: rgba(255,255,255,.18); overflow: hidden; }
+      .relleno {
+        height: 100%; width: 0%; border-radius: 10px;
+        background: linear-gradient(90deg, #dba73c 0%, #c97a44 60%, #b85c3f 100%);
+        transition: width .25s ease;
+      }
+      .estado { display: flex; justify-content: space-between; margin-top: 9px; font-size: 13px; font-weight: 800; color: #e8e2d8; }
+
+      .dato {
+        position: relative; display: flex; align-items: center; gap: 18px;
+        width: min(600px, 88vw); box-sizing: border-box; margin-top: 30px; padding: 22px 24px;
+        background: #efebe4; color: #2b2622; border-radius: 16px;
+        box-shadow: 0 14px 34px rgba(0,0,0,.35);
+        transition: opacity .4s ease;
+      }
+      .dato .ico {
+        flex: 0 0 46px; height: 46px; border-radius: 10px; background: #dba73c;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .dato .titulo { font-size: 12.5px; font-weight: 800; letter-spacing: 1.4px; color: #8a3b24; text-transform: uppercase; margin-bottom: 4px; }
+      .dato .texto { font-size: 15px; line-height: 1.45; }
+
+      #error { display: none; margin-top: 18px; color: #ffb4a2; font-weight: 700; text-align: center; max-width: 80vw; }
+
+      #pantalla-completa {
+        position: fixed; right: 14px; bottom: 14px; z-index: 5; display: none;
+        width: 38px; height: 38px; border: none; border-radius: 10px; cursor: pointer;
+        background: rgba(23,38,48,.65); color: #f1ece4;
+      }
+      #pantalla-completa:hover { background: rgba(23,38,48,.9); }
+      #aviso { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 20; display: none; font-family: 'Nunito', sans-serif; }
+      #aviso div { margin-top: 6px; padding: 8px 14px; border-radius: 8px; background: #efebe4; color: #2b2622; }
+    </style>
+  </head>
+  <body>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+
+    <div id="carga">
+      <div class="vidrio"></div>
+      <div class="cabecera">
+        <div class="icono">
+          <!-- estacion con reloj -->
+          <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M8 21 L22 10 L36 21 Z" fill="#c4553a"/>
+            <rect x="11" y="20" width="22" height="13" fill="#c4553a"/>
+            <rect x="19" y="26" width="6" height="7" fill="#8f3a26"/>
+            <circle cx="22" cy="19" r="6.2" fill="#f6f1e8" stroke="#8f3a26" stroke-width="1.2"/>
+            <path d="M22 15.6 V19 L24.6 20.4" stroke="#2b2622" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+            <rect x="8" y="34.5" width="28" height="2.2" rx="1.1" fill="#dba73c"/>
+            <rect x="10" y="38" width="24" height="1.6" rx=".8" fill="#dba73c" opacity=".75"/>
+          </svg>
+        </div>
+        <h1>La Estación en el Tiempo</h1>
+        <div class="sub">Preparando el recorrido…</div>
+      </div>
+
+      <div class="progreso">
+        <div class="barra"><div class="relleno" id="relleno"></div></div>
+        <div class="estado"><span id="etapa">Descargando archivos</span><span id="porcentaje">0%</span></div>
+      </div>
+
+      <div class="dato" id="dato">
+        <div class="ico" id="dato-ico"></div>
+        <div>
+          <div class="titulo" id="dato-titulo">¿Sabías que…?</div>
+          <div class="texto" id="dato-texto"></div>
+        </div>
+      </div>
+      <div id="error"></div>
+    </div>
+
+    <button id="pantalla-completa" title="Pantalla completa" aria-label="Pantalla completa">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M2 6V2h4M12 2h4v4M16 12v4h-4M6 16H2v-4"/>
+      </svg>
+    </button>
+    <div id="aviso"></div>
+
+    <script>
+      // ---------- Datos y consejos que rotan mientras carga ----------
+      // Para agregar mas, copia una linea: { tipo: "dato" | "consejo", texto: "..." }
+      var DATOS = [
+        { tipo: "dato",    texto: "La Estación del Ferrocarril de Cajicá fue construida en 1926 y hoy es Bien de Interés Cultural de la Nación." },
+        { tipo: "consejo", texto: "Presiona T para viajar entre 2026 y 1996, la época de La Viuda de Blanco." },
+        { tipo: "consejo", texto: "Acércate a las gemas brillantes para descubrir la historia de cada lugar." },
+        { tipo: "consejo", texto: "Arrastra con el mouse para girar la cámara y usa la rueda para acercarte." },
+        { tipo: "consejo", texto: "Presiona H en cualquier momento para volver a ver las instrucciones." }
+      ];
+      var ICONO_RELOJ = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2b2622" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+      var ICONO_IDEA  = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2b2622" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1.1 1.3 1.1 2.2h5c0-.9.5-1.7 1.1-2.2A6 6 0 0 0 12 3z"/></svg>';
+
+      var iDato = 0, cajaDato = document.getElementById("dato");
+      function mostrarDato(i) {
+        var d = DATOS[i % DATOS.length];
+        document.getElementById("dato-titulo").textContent = d.tipo === "dato" ? "¿Sabías que…?" : "Consejo";
+        document.getElementById("dato-ico").innerHTML = d.tipo === "dato" ? ICONO_RELOJ : ICONO_IDEA;
+        document.getElementById("dato-texto").textContent = d.texto;
+      }
+      mostrarDato(0);
+      var rotar = setInterval(function () {
+        cajaDato.style.opacity = 0;
+        setTimeout(function () { mostrarDato(++iDato); cajaDato.style.opacity = 1; }, 400);
+      }, 6000);
+
+      function etapaDe(p) {
+        if (p < 0.30) return "Descargando archivos";
+        if (p < 0.70) return "Cargando modelos 3D";
+        if (p < 0.90) return "Preparando texturas";
+        return "Construyendo la estación";
+      }
+      function progreso(p) {
+        var pct = Math.round(p * 100);
+        document.getElementById("relleno").style.width = pct + "%";
+        document.getElementById("porcentaje").textContent = pct + "%";
+        document.getElementById("etapa").textContent = etapaDe(p);
+      }
+
+      function unityShowBanner(msg, type) {
+        var aviso = document.getElementById("aviso");
+        var div = document.createElement("div");
+        div.innerHTML = msg;
+        if (type == "error") div.style.background = "#ffb4a2";
+        aviso.appendChild(div); aviso.style.display = "block";
+        if (type != "error") setTimeout(function () {
+          aviso.removeChild(div);
+          if (!aviso.children.length) aviso.style.display = "none";
+        }, 5000);
+      }
+
+      var canvas = document.querySelector("#unity-canvas");
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+        frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_THREADS
+        workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+#endif
+#if USE_WASM
+        codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+        symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+#endif
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+        productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+        productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+        showBanner: unityShowBanner,
+      };
+      // en celulares se baja un poco la resolucion para que vaya fluido
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) config.devicePixelRatio = 1;
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = function () {
+        createUnityInstance(canvas, config, progreso).then(function (unityInstance) {
+          progreso(1);
+          clearInterval(rotar);
+          setTimeout(function () {
+            document.getElementById("carga").classList.add("oculta");
+            setTimeout(function () { document.getElementById("carga").style.display = "none"; }, 800);
+          }, 350);
+          var btn = document.getElementById("pantalla-completa");
+          btn.style.display = "block";
+          btn.onclick = function () { unityInstance.SetFullscreen(1); };
+          canvas.focus();
+        }).catch(function (message) {
+          var e = document.getElementById("error");
+          e.style.display = "block";
+          e.textContent = "No se pudo cargar el recorrido: " + message;
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
