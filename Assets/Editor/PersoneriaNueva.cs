@@ -47,7 +47,7 @@ public static class PersoneriaNueva
 
         // borrar version anterior de este script y desactivar la Personeria vieja
         foreach (var go in Raices()) if (go.name == ROOT) Undo.DestroyObjectImmediate(go);
-        foreach (var go in Raices()) if (go.name == "Personeria") { Undo.RecordObject(go, "Ocultar vieja"); go.SetActive(false); }
+        foreach (var go in Raices()) if (go.name == "Personeria_Antigua") { Undo.RecordObject(go, "Ocultar vieja"); go.SetActive(false); }
 
         var root = new GameObject(ROOT).transform;
         Undo.RegisterCreatedObjectUndo(root.gameObject, "Personeria nueva");
@@ -356,7 +356,7 @@ public static class PersoneriaNueva
     static void MoverPOI()
     {
         foreach (var go in Raices())
-            if (go.name == "Pois")
+            if (go.name == EscenaUtil.POIS)
                 foreach (var poi in go.GetComponentsInChildren<POI>(true))
                     if (poi.name.ToLower().Contains("personeria"))
                     {
@@ -366,7 +366,7 @@ public static class PersoneriaNueva
     }
 
     // ============================================================ utilidades
-    static GameObject[] Raices() { return UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects(); }
+    static GameObject[] Raices() { return EscenaUtil.Raices(); }
 
     static Material Mat(string name, Color c, float smooth, Texture2D tex = null, float metal = 0f)
     {

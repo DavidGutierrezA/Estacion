@@ -63,7 +63,7 @@ public static class ConfigJugador
         EditorUtility.SetDirty(mat);
 
         // ---- 4. Jugador en escena ----
-        var player = GameObject.Find("player");
+        var player = GameObject.Find("Jugador");
         if (player == null) { Debug.LogError("[Jugador] No encuentro 'player'"); return; }
         Undo.RegisterFullObjectHierarchyUndo(player, "Configurar jugador");
 
@@ -106,7 +106,7 @@ public static class ConfigJugador
     public static void Camara()
     {
         var cmGO = GameObject.Find("CinemachineCamera");
-        var player = GameObject.Find("player");
+        var player = GameObject.Find("Jugador");
         if (cmGO == null || player == null) { Debug.LogError("[Jugador] Falta CinemachineCamera o player"); return; }
         Undo.RegisterFullObjectHierarchyUndo(cmGO, "Camara orbital");
 

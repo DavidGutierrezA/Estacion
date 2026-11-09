@@ -38,6 +38,8 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         Vector2 input = moveAction.ReadValue<Vector2>();
+        if (ControlesTactiles.Activos)   // joystick en pantalla (celular / tablet)
+            input = Vector2.ClampMagnitude(input + ControlesTactiles.Movimiento, 1f);
 
         if (input.sqrMagnitude > 0.01f)
         {

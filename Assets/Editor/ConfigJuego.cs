@@ -24,7 +24,7 @@ public static class ConfigJuego
     public static void Colisiones()
     {
         int n = 0;
-        foreach (var nombre in new[] { "Estacion", "Personeria" })
+        foreach (var nombre in new[] { "Estacion", "Personeria_Antigua" })
         {
             var root = Raiz(nombre);
             if (root == null) continue;
@@ -246,7 +246,7 @@ public static class ConfigJuego
     // Activa los POIs, les pone contenido provisional, trigger amplio y marcador dorado.
     static void Pois()
     {
-        var pois = Raiz("Pois");
+        var pois = Raiz(EscenaUtil.POIS);
         if (pois == null) return;
         pois.SetActive(true);
         var oro = Mat("POI_Dorado", new Color(1f, 0.78f, 0.30f), 0.4f, new Color(1.0f, 0.65f, 0.2f));
@@ -429,7 +429,7 @@ public static class ConfigJuego
     public static void Limpiar()
     {
         int n = 0;
-        foreach (var root in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        foreach (var root in EscenaUtil.Raices())
             foreach (var t in root.GetComponentsInChildren<Transform>(true))
             {
                 int k = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject);
@@ -488,7 +488,7 @@ public static class ConfigJuego
 
     static GameObject Raiz(string name)
     {
-        foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        foreach (var go in EscenaUtil.Raices())
             if (go.name == name) return go;
         return null;
     }

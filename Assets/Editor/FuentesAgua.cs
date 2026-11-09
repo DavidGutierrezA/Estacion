@@ -86,7 +86,7 @@ public static class FuentesAgua
         // ---- Canales de 2026 (Fuentes rectas) ----
         // David prefiere el agua QUIETA aqui: material propio sin ondas, sin animacion.
         // Pon CANALES_CON_CHORROS = true si algun dia se quieren chorritos.
-        var canales = Raiz("Fuentes rectas");
+        var canales = Raiz("Fuentes_Rectas");
         if (canales != null)
         {
             Limpiar(canales.transform);
@@ -115,7 +115,7 @@ public static class FuentesAgua
         }
 
         // ---- Fuente de piso de 2026 (FuentesPiso): rejilla de chorros que salen de vez en cuando ----
-        var piso = Raiz("FuentesPiso");
+        var piso = Raiz("Fuentes_Piso");
         if (piso != null)
         {
             Limpiar(piso.transform);
@@ -281,7 +281,7 @@ public static class FuentesAgua
         return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
     }
 
-    static GameObject[] Raices() { return UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects(); }
+    static GameObject[] Raices() { return EscenaUtil.Raices(); }
     static GameObject Raiz(string n) { foreach (var g in Raices()) if (g.name == n) return g; return null; }
 }
 #endif

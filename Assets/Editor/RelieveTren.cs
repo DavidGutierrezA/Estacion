@@ -35,7 +35,7 @@ public static class RelieveTren
         piezas = new Dictionary<Material, List<CombineInstance>>();
 
         GameObject raiz = null;
-        foreach (var go in Raices()) if (go.name == "Estatua") raiz = go;
+        foreach (var go in Raices()) if (go.name == "Estatua_Tren") raiz = go;
         if (raiz == null) { Debug.LogError("[Esculturas] No encuentro el objeto raiz 'Estatua'"); return; }
         var viejo = raiz.transform.Find(GRUPO);
         if (viejo != null) Undo.DestroyObjectImmediate(viejo.gameObject);
@@ -163,7 +163,7 @@ public static class RelieveTren
         return m;
     }
 
-    static GameObject[] Raices() { return UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects(); }
+    static GameObject[] Raices() { return EscenaUtil.Raices(); }
 
     // El conjunto (relieve, senoras y reja de David) solo existe en 2026.
     static void Registrar(GameObject obj)

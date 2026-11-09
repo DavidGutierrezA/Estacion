@@ -159,7 +159,7 @@ public static class DecoradorPlaza
         m.SetTexture("_BaseMap", tex); m.SetTextureScale("_BaseMap", tiling);
         m.SetTexture("_MainTex", tex); m.SetTextureScale("_MainTex", tiling);
         EditorUtility.SetDirty(m);
-        foreach (var n in new[] { "Suelo", "Suelo (1)" })
+        foreach (var n in new[] { "Suelo_Oeste", "Suelo_Este" })
         {
             var go = FindRoot(n);
             if (go == null) continue;
@@ -326,7 +326,7 @@ public static class DecoradorPlaza
         // Plataforma / escalones: beige piedra en 2026; las otras epocas conservan el material original del FBX.
         var plataforma = Mat("Estacion_Plataforma_2026", new Color(0.84f, 0.78f, 0.67f), 0.1f);
         Material plataformaOriginal = null;
-        foreach (var a in AssetDatabase.LoadAllAssetsAtPath("Assets/Prefabs/Estacion.fbx"))
+        foreach (var a in AssetDatabase.LoadAllAssetsAtPath("Assets/Art/Modelos/Estacion.fbx"))
             if (a is Material && a.name == "Suelo_Plaza.002") { plataformaOriginal = (Material)a; break; }
         if (est != null)
             foreach (var t in est.GetComponentsInChildren<Transform>(true))
@@ -401,9 +401,10 @@ public static class DecoradorPlaza
         var g = new GameObject("Detalles_Parapeto").transform;   // se crea en coordenadas de mundo
         // Caras reales del parapeto (se leen del modelo para que los paneles queden al ras)
         float zFrente = 53.36f, xDer = 13.46f, xIzq = -13.61f;
+        MeshFilter parapetoFrente = null;
         foreach (var r in est.GetComponentsInChildren<Renderer>(true))
         {
-            if (r.name == "Parapeto") zFrente = r.bounds.min.z;
+            if (r.name == "Parapeto") { zFrente = r.bounds.min.z; parapetoFrente = r.GetComponent<MeshFilter>(); }
             else if (r.name == "Parapeto.001") xDer = r.bounds.max.x;
             else if (r.name == "Parapeto.002") xIzq = r.bounds.min.x;
         }
@@ -412,8 +413,9 @@ public static class DecoradorPlaza
             foreach (int s in new[] { -1, 1 })
             {
                 float x = ax * s;
-                Panel(g, new Vector3(x, y, zFrente - 0.012f), new Vector3(0, 0, 90), new Vector3(0.44f, 0.56f, 0.03f), blanco, "Fachada");
-                Panel(g, new Vector3(x, y, zFrente - 0.03f), new Vector3(0, 0, 90), new Vector3(0.30f, 0.46f, 0.02f), muro, "Estructura");
+                float zc = CaraFrente(parapetoFrente, x, y, zFrente);
+                Panel(g, new Vector3(x, y, zc - 0.012f), new Vector3(0, 0, 90), new Vector3(0.44f, 0.56f, 0.03f), blanco, "Fachada");
+                Panel(g, new Vector3(x, y, zc - 0.03f), new Vector3(0, 0, 90), new Vector3(0.30f, 0.46f, 0.02f), muro, "Estructura");
             }
         foreach (float z in new[] { 55.6f, 57.6f, 59.6f, 61.6f })
             foreach (int s in new[] { -1, 1 })
@@ -423,6 +425,32 @@ public static class DecoradorPlaza
                 Panel(g, new Vector3(xo + 0.03f * s, y, z), new Vector3(90, 0, 0), new Vector3(0.02f, 0.46f, 0.30f), muro, "Estructura");
             }
         g.SetParent(est.transform, true);   // queda dentro de la estacion, conservando posicion
+    }
+
+    static float CaraFrente(MeshFilter mf, float x, float y, float defecto)
+    {
+        if (mf == null || mf.sharedMesh == null) return defecto;
+        var v = mf.sharedMesh.vertices;
+        var t = mf.sharedMesh.triangles;
+        var m = mf.transform.localToWorldMatrix;
+        var o = new Vector3(x, y, defecto - 5f);
+        float mejor = float.MaxValue;
+        for (int i = 0; i < t.Length; i += 3)
+        {
+            Vector3 a = m.MultiplyPoint3x4(v[t[i]]), b = m.MultiplyPoint3x4(v[t[i + 1]]), c = m.MultiplyPoint3x4(v[t[i + 2]]);
+            Vector3 e1 = b - a, e2 = c - a, q = Vector3.Cross(Vector3.forward, e2);
+            float det = Vector3.Dot(e1, q);
+            if (Mathf.Abs(det) < 1e-8f) continue;
+            Vector3 s = o - a;
+            float u = Vector3.Dot(s, q) / det;
+            if (u < 0f || u > 1f) continue;
+            Vector3 r = Vector3.Cross(s, e1);
+            float w = Vector3.Dot(Vector3.forward, r) / det;
+            if (w < 0f || u + w > 1f) continue;
+            float d = Vector3.Dot(e2, r) / det;
+            if (d > 0f && d < mejor) mejor = d;
+        }
+        return mejor == float.MaxValue ? defecto : o.z + mejor;
     }
 
     static void Panel(Transform parent, Vector3 worldPos, Vector3 rot, Vector3 scale, Material m, string tag)
@@ -631,7 +659,7 @@ public static class DecoradorPlaza
 
     static GameObject FindRoot(string name)
     {
-        foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        foreach (var go in EscenaUtil.Raices())
             if (go.name == name) return go;
         return null;
     }

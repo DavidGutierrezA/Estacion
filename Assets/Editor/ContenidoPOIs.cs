@@ -52,14 +52,14 @@ public static class ContenidoPOIs
                 anio = "Hoy", titulo = "La Personería Municipal",
                 texto = "Este edificio vecino, levantado sobre una plataforma de piedra con escaleras y baranda, alberga hoy la Personería Municipal de Cajicá. La placa histórica cuenta que el conjunto de la estación está compuesto por dos edificios de rasgos republicanos y que en 1950 se construyó el segundo, destinado a almacenar los productos de la región.",
                 fuente = PLACA, foto = "POI_Personeria.jpg" },
-            new Dato { nombre = "POI_Virgen_Viuda", epoca = Epoca.SoloViuda, pos = new Vector3(-25.9f, 0f, 62.0f),
+            new Dato { nombre = "POI_Virgen_Viuda", epoca = Epoca.SoloViuda, pos = new Vector3(-27.8f, 0f, 56.1f),
                 anio = "Años 70", titulo = "La Virgen del Carmen",
-                texto = "La imagen de la Virgen del Carmen fue colocada por iniciativa de los ferroviarios en los años setenta. En esta época estaba en una gruta azul con nicho blanco, al costado de la estación, rodeada de jardineras.",
-                fuente = PLACA, foto = "POI_Virgen_Viuda.jpg" },
+                texto = "La imagen de la Virgen del Carmen fue colocada por iniciativa de los ferroviarios en los años setenta. En esta época estaba sobre un pedestal rosado con una nube azul y dos angelitos, bajo un techo curvo sostenido por columnas metálicas, en una jardinera de ladrillo al costado de la estación.",
+                fuente = PLACA, foto = "POI_Virgen_Viuda_Santuario.jpg" },
             new Dato { nombre = "POI_Virgen_2026", epoca = Epoca.Solo2026, pos = new Vector3(-43.4f, 0f, 57.1f),
                 anio = "Años 70", titulo = "La Virgen del Carmen",
-                texto = "La imagen de la Virgen del Carmen fue colocada por iniciativa de los ferroviarios en los años setenta y sigue siendo parte de la estación. En la época de La Viuda de Blanco estaba en una gruta azul junto al andén, como muestra esta fotografía.",
-                fuente = PLACA, foto = "POI_Virgen_Viuda.jpg" },
+                texto = "La imagen de la Virgen del Carmen fue colocada por iniciativa de los ferroviarios en los años setenta y sigue siendo parte de la estación. Hoy está en una vitrina azul con marco dorado sobre un pilar, dentro de una jardinera con reja.",
+                fuente = PLACA, foto = "POI_Virgen_2026.jpg" },
             new Dato { nombre = "POI_Monumento_Paz", epoca = Epoca.Solo2026, pos = new Vector3(-38f, 0f, 64.0f),
                 anio = "2025", titulo = "Monumento a la paz y la reconciliación",
                 texto = "Las alas representan la esperanza y la libertad; las armas depuestas, la decisión de optar por el diálogo y la tolerancia; y las caretas, el papel del arte para transformar el dolor y el conflicto en expresión y unión.",
@@ -75,9 +75,9 @@ public static class ContenidoPOIs
     public static void Construir()
     {
         GameObject pois = null, em = null;
-        foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        foreach (var go in EscenaUtil.Raices())
         {
-            if (go.name == "Pois") pois = go;
+            if (go.name == EscenaUtil.POIS) pois = go;
             if (go.name == "EpocaManager") em = go;
         }
         if (pois == null) { Debug.LogError("[POIs] No encuentro 'Pois'"); return; }

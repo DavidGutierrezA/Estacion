@@ -295,7 +295,7 @@ public static class BurbujaNiebla
 
     static GameObject Raiz(string nombre)
     {
-        foreach (var go in SceneManager.GetActiveScene().GetRootGameObjects())
+        foreach (var go in EscenaUtil.Raices())
             if (go.name == nombre) return go;
         return null;
     }

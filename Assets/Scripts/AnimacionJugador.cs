@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Conecta el movimiento del jugador con su Animator.
-// Pon este script en el objeto "player" (junto al PlayerController).
+// Pon este script en el objeto "Jugador" (junto al PlayerController).
 // El Animator del modelo debe tener un parametro float "Velocidad".
 public class AnimacionJugador : MonoBehaviour
 {

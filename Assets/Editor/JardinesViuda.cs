@@ -20,7 +20,7 @@ public static class JardinesViuda
     const string MAT_DIR = "Assets/Art/Materiales/Jardines";
     const string GEN_DIR = "Assets/Art/Generado";
     const string ROOT = "EPOCA_Viuda_Jardines";
-    // Los canales de agua modernos ("Fuentes rectas") atraviesan el jardin:
+    // Los canales de agua modernos ("Fuentes_Rectas") atraviesan el jardin:
     // si es true, se muestran solo en 2026 y se ocultan en las demas epocas.
     const bool OCULTAR_CANALES_FUERA_DE_2026 = true;
 
@@ -71,61 +71,43 @@ public static class JardinesViuda
         // cubre toda la estacion: plaza del frente, costados y anden (la plataforma y la Personeria quedan por encima)
         Prim(PrimitiveType.Cube, "Piso_Ladrillo", root, new Vector3(20f, 0.025f, 45f), new Vector3(140f, 0.04f, 42f), pisoLadrillo, default, true);
 
-        // ---- Plaza de la fuente (plano de David, 31-oct) ----
-        //  Camino central recto (x = -3..3) desde la escalinata hasta la calle.
-        //  Izquierda: 2 jardineras con el extremo redondeado hacia el camino.
-        //  Derecha: la fuente pegada al camino; las 2 jardineras de la derecha la
-        //  abrazan con un arco concavo (la rotonda se cierra solo de ese lado).
-        //  Afuera de la plaza las jardineras continuan (costados y fondo).
-        Vector3 centroFuente = CENTRO_FUENTE;
-        Vector2 F = new Vector2(centroFuente.x, centroFuente.z);
-        const float RC = 5.1f;   // radio libre alrededor de la fuente (escalones 3.9 + andencito 1.2)
+        Vector3 centroFuente = Plano3(3.25f, -8.25f);
+        float radioFuente = 1.7f * ESCALA_PLANO;
         var plazaFuente = Grupo("Plaza_Fuente", root, new Vector3(centroFuente.x, 0f, centroFuente.z));
-        var plaza = Grupo("Jardineras_Plaza", root, Vector3.zero);
-        // izquierda arriba: "D" con la punta redonda hacia el camino
-        JardineraPoly(plaza, "Izq_Arriba", Forma.Rect(-20.5f, -3.4f, 41.0f, 46.8f, 0.8f, 2.9f, 2.9f, 0.8f), ladrillo, cesped, hoja1, hoja2);
-        // izquierda abajo: esquina de arriba-derecha muy redondeada
-        JardineraPoly(plaza, "Izq_Abajo", Forma.Rect(-20.5f, -3.4f, 29.0f, 37.8f, 0.8f, 3.0f, 0.8f, 0.8f), ladrillo, cesped, hoja1, hoja2);
-        // derecha arriba / abajo: rectangulos con el mordisco circular de la fuente
-        JardineraPoly(plaza, "Der_Arriba", Forma.RectMenosCirculo(3.4f, 19.5f, 41.2f, 47.2f, 0.8f, F, RC), ladrillo, cesped, hoja1, hoja2);
-        JardineraPoly(plaza, "Der_Abajo", Forma.RectMenosCirculo(3.4f, 20.0f, 29.0f, 36.8f, 0.8f, F, RC), ladrillo, cesped, hoja1, hoja2);
-        // jardinerita redonda a la derecha
-        JardineraPoly(plaza, "Redonda", Forma.Circulo(new Vector2(17.6f, 39.0f), 1.3f), ladrillo, cesped, hoja1, hoja2);
-        Prim(PrimitiveType.Cylinder, "Escalon_1", plazaFuente, new Vector3(0, 0.09f, 0), new Vector3(7.8f, 0.09f, 7.8f), ladrillo, default, true);
-        Prim(PrimitiveType.Cylinder, "Escalon_2", plazaFuente, new Vector3(0, 0.27f, 0), new Vector3(6.6f, 0.09f, 6.6f), piedra, default, true);
+        float d1 = (radioFuente + 0.7f) * 2f, d2 = (radioFuente + 0.3f) * 2f;
+        Prim(PrimitiveType.Cylinder, "Escalon_1", plazaFuente, new Vector3(0, 0.09f, 0), new Vector3(d1, 0.09f, d1), ladrillo, default, true);
+        Prim(PrimitiveType.Cylinder, "Escalon_2", plazaFuente, new Vector3(0, 0.27f, 0), new Vector3(d2, 0.09f, d2), piedra, default, true);
         var fuente = Buscar("Fuente viuda");
         if (fuente != null)
         {
             Undo.RecordObject(fuente.transform, "Mover fuente");
-            fuente.transform.position = new Vector3(centroFuente.x, -0.08f + 0.36f, centroFuente.z);   // sobre los escalones
+            fuente.transform.position = new Vector3(centroFuente.x, -0.08f + 0.36f, centroFuente.z);
+            fuente.transform.localScale = Vector3.one * (ESCALA_FUENTE_MODELO * radioFuente / RADIO_PILETA_MODELO);
         }
 
-        // ---- Jardineras FUERA de la plaza: siguen a los lados y hacia el fondo ----
+        float zCaminoIni = Plano(0f, -18f).y, zCaminoFin = 49.95f;
+        Prim(PrimitiveType.Cube, "Camino_Piedra", root, new Vector3(Plano(-2f, 0f).x, 0.055f, (zCaminoIni + zCaminoFin) / 2f), new Vector3(4.4f * ESCALA_PLANO, 0.02f, zCaminoFin - zCaminoIni), piedra);
+
+        var plaza = Grupo("Jardineras_Plaza", root, Vector3.zero);
+        JardineraPoly(plaza, "Izquierda", Poligono(-20f, -6.5f, -15f, -6.5f, -14.5f, -5f, -12.5f, -5f, -10f, -5f, -9.5f, -6.5f, -5f, -6.5f, -5f, -2f, -20f, -2f), ladrillo, cesped, hoja1, hoja2);
+        JardineraPoly(plaza, "Derecha", PoligonoFuente(centroFuente, 1f, -2f, 15f, -2f, 15f, -7f, 6f, -7f, 5.5f, -6.5f, 5.5f, -5.5f, 1f, -5.5f), ladrillo, cesped, hoja1, hoja2);
+        JardineraPoly(plaza, "3", PoligonoFuente(centroFuente, 1f, -11f, 5.5f, -11f, 5.5f, -10f, 6f, -9.5f, 15f, -9.5f, 15f, -14.5f, 1f, -14.5f), ladrillo, cesped, hoja1, hoja2);
+        JardineraPoly(plaza, "4", Poligono(-5f, -14.5f, -5f, -10f, -11.5f, -10f, -12f, -9f, -20f, -9f, -20f, -14.5f), ladrillo, cesped, hoja1, hoja2);
+
         var jard = Grupo("Jardineras_Afuera", root, Vector3.zero);
-        Jardinera(jard, new Vector2(-31.5f, -23.5f), new Vector2(29.0f, 37.8f), ladrillo, cesped, hoja1, hoja2);
-        Jardinera(jard, new Vector2(-31f, -24f), new Vector2(41.0f, 51.5f), ladrillo, cesped, hoja1, hoja2);   // izquierda: termina antes de la Virgen
-        Jardinera(jard, new Vector2(23.5f, 31.5f), new Vector2(29.0f, 36.8f), ladrillo, cesped, hoja1, hoja2);
-        Jardinera(jard, new Vector2(23.5f, 31.5f), new Vector2(41.2f, 46.0f), ladrillo, cesped, hoja1, hoja2);
-        Jardinera(jard, new Vector2(22.8f, 25.4f), new Vector2(48.2f, 63f), ladrillo, cesped, hoja1, hoja2); // derecha: sigue la linea recta hacia el fondo
+        JardineraPoly(jard, "5", Poligono(-25f, -13.5f, -25f, -9f, -30f, -9f, -31f, -10f, -38.5f, -10f, -38.5f, -13.5f), ladrillo, cesped, hoja1, hoja2);
+        JardineraPoly(jard, "6", Poligono(-38f, -6f, -38f, 10f, -34f, 10f, -34f, -6f), ladrillo, cesped, hoja1, hoja2);
 
-        // ---- Gruta de la Virgen (foto "Ubicacion antigua de la virgen") ----
         Gruta(root, ladrillo, cesped, hoja1, hoja2);
+        var jardVirgen = Grupo("Jardineras_Virgen", root, Vector3.zero);
+        JardineraPoly(jardVirgen, "7a", Poligono(-28f, 2.5f, -21f, 2.5f, -21f, 1f, -28f, 1f), ladrillo, cesped, hoja1, hoja2);
+        JardineraPoly(jardVirgen, "7b", Poligono(-28f, 9f, -21f, 9f, -21f, 7.5f, -28f, 7.5f), ladrillo, cesped, hoja1, hoja2);
+        JardineraPoly(jardVirgen, "Virgen", Poligono(-23f, 7f, -21f, 7f, -21f, 3f, -23f, 3f), ladrillo, cesped, hoja1, hoja2);
 
-        // ---- Coniferas altas ----
-        var pinos = Grupo("Coniferas", root, Vector3.zero);
-        Conifera(pinos, new Vector3(-27.5f, 0f, 46.5f), 1.0f, tronco, pinoHoja);
-        Conifera(pinos, new Vector3(27.5f, 0f, 61f), 0.85f, tronco, pinoHoja);
-
-        // ---- Arboles grandes y frondosos (dentro de las jardineras, como en la foto sepia) ----
         var grandes = Grupo("Arboles_Grandes", root, Vector3.zero);
-        // como en el plano: uno grande entre las jardineras de cada lado y otros dentro de ellas
-        ArbolGrande(grandes, new Vector3(-14.5f, 0f, 39.4f), 1.05f, tronco, follaje1, follaje2);
-        ArbolGrande(grandes, new Vector3(13.0f, 0f, 39.0f), 1.0f, tronco, follaje1, follaje2);
-        ArbolGrande(grandes, new Vector3(-17.0f, 0f, 44.0f), 1.1f, tronco, follaje1, follaje2);
-        ArbolGrande(grandes, new Vector3(-14.0f, 0f, 31.5f), 0.8f, tronco, follaje1, follaje2);
-        ArbolGrande(grandes, new Vector3(17.0f, 0f, 31.2f), 0.85f, tronco, follaje1, follaje2);
-        ArbolGrande(grandes, new Vector3(-27.5f, 0f, 33.4f), 0.95f, tronco, follaje1, follaje2);
-        ArbolGrande(grandes, new Vector3(27.5f, 0f, 33.0f), 0.9f, tronco, follaje1, follaje2);
+        ArbolGrande(grandes, Plano3(-7f, -12f), 1.0f, tronco, hoja1, hoja2);
+        ArbolGrande(grandes, Plano3(-8f, -4.5f), 1.1f, tronco, hoja1, hoja2);
+        ArbolGrande(grandes, Plano3(-18f, -12.5f), 0.95f, tronco, hoja1, hoja2);
 
         // ---- Macizos de flores como prefabs (para que David los coloque a mano) ----
         CrearPrefabsMacizos(hoja1, hoja2, flores);
@@ -134,11 +116,6 @@ public static class JardinesViuda
         Marquesina(root, Mat("Jardin_Marquesina", new Color(0.52f, 0.55f, 0.56f), 0.35f),
                          Mat("Jardin_Mensula", new Color(0.18f, 0.24f, 0.21f), 0.35f));
 
-        // ---- Copas de los arboles grandes unidas en pocas mallas ----
-        var detalle = Grupo("Copas_Arboles", root, Vector3.zero);
-        var ico1 = Ico(1, "Ico_Sub1");
-        Combinado("Jardin_Copas_A", detalle, follaje1, hoja1, ico1);
-        Combinado("Jardin_Copas_B", detalle, follaje2, hoja2, ico1);
 
         Registrar(root.gameObject);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
@@ -149,11 +126,32 @@ public static class JardinesViuda
     // Color del piso de ladrillo (en las fotos no se sabe si era rojo o gris).
     // Tambien se cambia facil en Unity: material Assets/Art/Materiales/Jardines/Viuda_Piso_Ladrillo -> Base Color.
     static readonly Color COLOR_PISO = new Color(0.74f, 0.45f, 0.36f);      // gris: new Color(0.70f, 0.69f, 0.66f)
-    static readonly Vector3 CENTRO_FUENTE = new Vector3(5.6f, 0f, 39.0f);    // fuente pegada al lado derecho del camino (plano de David)
+    const float ESCALA_FUENTE_MODELO = 155.68f;
+    const float RADIO_PILETA_MODELO = 2.69f;
     // Empty que David puso donde iba la Virgen. La gruta mira hacia el +Z (adelante) del empty:
     // si hay que girarla, rota el empty en Y y vuelve a correr el menu.
-    const string EMPTY_VIRGEN = "Ubicaion virgen viuda";
+    const string EMPTY_VIRGEN = "Ubicacion virgen viuda";
     static readonly Vector3 VIRGEN_POR_DEFECTO = new Vector3(-25.86f, 0f, 58.78f);
+
+    const float ESCALA_PLANO = 1.25f;
+    static readonly Vector2 ORIGEN_PLANO = new Vector2(2.5f, 49.8f);
+    const float RADIO_ESQUINA = 0.8f;
+    const float RADIO_ESQUINA_FUENTE = 1.4f;
+    const float RADIO_ROTONDA = 4.0f;
+
+    static Vector2 Plano(float x, float z) { return new Vector2(x * ESCALA_PLANO + ORIGEN_PLANO.x, z * ESCALA_PLANO + ORIGEN_PLANO.y); }
+    static Vector3 Plano3(float x, float z) { var v = Plano(x, z); return new Vector3(v.x, 0f, v.y); }
+    static List<Vector2> PuntosPlano(params float[] xz)
+    {
+        var p = new List<Vector2>();
+        for (int i = 0; i + 1 < xz.Length; i += 2) p.Add(Plano(xz[i], xz[i + 1]));
+        return p;
+    }
+    static List<Vector2> Poligono(params float[] xz) { return Forma.Redondear(PuntosPlano(xz), RADIO_ESQUINA); }
+    static List<Vector2> PoligonoFuente(Vector3 fuente, params float[] xz)
+    {
+        return Forma.MenosCirculo(Forma.Redondear(PuntosPlano(xz), RADIO_ESQUINA_FUENTE), new Vector2(fuente.x, fuente.z), RADIO_ROTONDA);
+    }
 
     // Gruta azul con nicho de arco blanco, Virgen sobre pedestal y jardineras alrededor.
     static void Gruta(Transform root, Material ladrillo, Material cesped, Material h1, Material h2)
@@ -206,12 +204,6 @@ public static class JardinesViuda
             }
             foreach (var tr in est.GetComponentsInChildren<Transform>()) tr.gameObject.isStatic = true;
         }
-
-        // jardineras alrededor (como en la foto): a los lados, detras y una larga al frente
-        Jardinera(t, new Vector2(-5.6f, -2.4f), new Vector2(-1.0f, 2.6f), ladrillo, cesped, h1, h2);
-        Jardinera(t, new Vector2(2.4f, 3.7f), new Vector2(-1.0f, 2.6f), ladrillo, cesped, h1, h2);   // corta: no pisa el anden
-        Jardinera(t, new Vector2(-4.4f, 3.7f), new Vector2(-3.4f, -1.4f), ladrillo, cesped, h1, h2);
-        Jardinera(t, new Vector2(-7.5f, -2.0f), new Vector2(4.6f, 6.4f), ladrillo, cesped, h1, h2);
     }
     static int contMallas;
 
@@ -267,7 +259,12 @@ public static class JardinesViuda
         // Rectangulo redondeado con un "mordisco" circular (la jardinera abraza la fuente).
         public static List<Vector2> RectMenosCirculo(float x0, float x1, float z0, float z1, float r, Vector2 c, float rc)
         {
-            var p = Rect(x0, x1, z0, z1, r, r, r, r);
+            return MenosCirculo(Rect(x0, x1, z0, z1, r, r, r, r), c, rc);
+        }
+
+        public static List<Vector2> MenosCirculo(List<Vector2> p, Vector2 c, float rc)
+        {
+            if (Area(p) < 0f) { p = new List<Vector2>(p); p.Reverse(); }
             int n = p.Count, inicio = -1;
             for (int i = 0; i < n; i++) if ((p[i] - c).magnitude >= rc) { inicio = i; break; }
             if (inicio < 0) return p;
@@ -291,6 +288,37 @@ public static class JardinesViuda
                         q.Add(c + new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * rc);
                     }
                 }
+            }
+            return Limpiar(q);
+        }
+
+        public static List<Vector2> Redondear(List<Vector2> pts, float r)
+        {
+            var p = new List<Vector2>();
+            foreach (var v in pts) if (p.Count == 0 || Vector2.Distance(p[p.Count - 1], v) > 0.01f) p.Add(v);
+            if (p.Count > 2 && Vector2.Distance(p[0], p[p.Count - 1]) < 0.01f) p.RemoveAt(p.Count - 1);
+            int n = p.Count;
+            var ini = new Vector2[n]; var fin = new Vector2[n];
+            for (int i = 0; i < n; i++)
+            {
+                Vector2 b = p[i], da = p[(i - 1 + n) % n] - b, dc = p[(i + 1) % n] - b;
+                float la = da.magnitude, lc = dc.magnitude;
+                da /= la; dc /= lc;
+                float ang = Mathf.Acos(Mathf.Clamp(Vector2.Dot(da, dc), -1f, 1f));
+                float t = ang > 3.1f ? 0f : r / Mathf.Tan(ang * 0.5f);
+                t = Mathf.Min(t, Mathf.Min(la, lc) * 0.5f);
+                ini[i] = b + da * t; fin[i] = b + dc * t;
+            }
+            var q = new List<Vector2>();
+            for (int i = 0; i < n; i++)
+            {
+                const int m = 10;
+                for (int s = 0; s <= m; s++)
+                {
+                    float u = (float)s / m;
+                    q.Add((1 - u) * (1 - u) * ini[i] + 2 * (1 - u) * u * p[i] + u * u * fin[i]);
+                }
+                Linea(q, fin[i], ini[(i + 1) % n]);
             }
             return Limpiar(q);
         }
@@ -424,8 +452,12 @@ public static class JardinesViuda
     {
         const float h = 0.45f, e = 0.25f;
         if (Area(contorno) < 0f) contorno.Reverse();
+        var centro = Vector2.zero;
+        foreach (var q0 in contorno) centro += q0;
+        centro /= contorno.Count;
+        for (int i = 0; i < contorno.Count; i++) contorno[i] -= centro;
         var interior = Desplazar(contorno, e);
-        var g = Grupo("Jardinera_" + name, p, Vector3.zero);
+        var g = Grupo("Jardinera_" + name, p, new Vector3(centro.x, 0f, centro.y));
 
         var v = new List<Vector3>(); var t = new List<int>();
         int n = contorno.Count;
@@ -698,16 +730,21 @@ public static class JardinesViuda
         }
     }
 
-    static void ArbolGrande(Transform p, Vector3 pos, float s, Material tronco, List<Matrix4x4> f1, List<Matrix4x4> f2)
+    static void ArbolGrande(Transform p, Vector3 pos, float s, Material tronco, Material h1, Material h2)
     {
         var g = Grupo("Arbol_Grande", p, pos);
-        // tronco alto y copa elevada (como en la foto sepia): se ve la plaza por debajo
         Prim(PrimitiveType.Cylinder, "Tronco", g, new Vector3(0, 3.6f * s, 0), new Vector3(0.7f, 3.6f, 0.7f) * s, tronco, default, true);
         Vector3[] off = { new Vector3(0, 8.4f, 0), new Vector3(2.4f, 7.6f, 0.8f), new Vector3(-2.2f, 7.8f, -0.9f),
                           new Vector3(0.6f, 7.4f, -2.3f), new Vector3(-0.8f, 7.5f, 2.2f), new Vector3(0.3f, 9.8f, 0.4f) };
         float[] tam = { 6.0f, 4.4f, 4.6f, 4.2f, 4.3f, 3.8f };
+        var ico1 = Ico(1, "Ico_Sub1");
+        var ms = new List<Mesh>(); var mx = new List<Matrix4x4>(); var mi = new List<int>();
         for (int i = 0; i < off.Length; i++)
-            (i % 2 == 0 ? f1 : f2).Add(Matrix4x4.TRS(pos + off[i] * s, Quaternion.Euler(0, R(0, 360), 0), Vector3.one * tam[i] * s));
+        {
+            ms.Add(ico1); mi.Add(i % 2);
+            mx.Add(Matrix4x4.TRS(off[i] * s, Quaternion.Euler(0, R(0, 360), 0), Vector3.one * tam[i] * s));
+        }
+        PlantasObj("Copa", g, ms, mx, mi, new[] { h1, h2 });
     }
 
     // Techo inclinado sobre el anden (cara +Z de la estacion) con mensulas diagonales.
@@ -738,7 +775,7 @@ public static class JardinesViuda
 
     static GameObject Buscar(string name)
     {
-        foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        foreach (var go in EscenaUtil.Raices())
             if (go.name == name) return go;
         return null;
     }
@@ -828,12 +865,12 @@ public static class JardinesViuda
     static void Registrar(GameObject jardines)
     {
         GameObject em = null, canales = null, piso2026 = null, arbolitos = null, virgen2026 = null;
-        foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        foreach (var go in EscenaUtil.Raices())
         {
             if (go.name == "EpocaManager") em = go;
             if (go.name == "Virgen") virgen2026 = go;   // la Virgen actual (2026); en la Viuda esta en la gruta
-            if (go.name == "Fuentes rectas") canales = go;
-            if (go.name == "FuentesPiso") piso2026 = go;
+            if (go.name == "Fuentes_Rectas") canales = go;
+            if (go.name == "Fuentes_Piso") piso2026 = go;
             if (go.name == "COMUN_Entorno") { var t = go.transform.Find("Arboles_Frente"); if (t != null) arbolitos = t.gameObject; }
         }
         if (em == null) { Debug.LogWarning("[Jardines] No encontre EpocaManager"); return; }
@@ -917,7 +954,7 @@ public static class JardinesViuda
 
     static Transform Raiz(string name)
     {
-        foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        foreach (var go in EscenaUtil.Raices())
             if (go.name == name) { Undo.DestroyObjectImmediate(go); break; }
         var r = new GameObject(name);
         Undo.RegisterCreatedObjectUndo(r, "Crear " + name);

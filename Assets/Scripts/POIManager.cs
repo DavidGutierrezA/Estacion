@@ -45,6 +45,12 @@ public class POIManager : MonoBehaviour
             ClosePanel();
     }
 
+    // Tocar / hacer clic en el aviso dorado (celular y PC): abre el POI cercano.
+    public void Interactuar()
+    {
+        if (!panelOpen && current != null && !PantallaInstrucciones.Abierta) OpenPanel(current);
+    }
+
     public void PlayerEntered(POI poi)
     {
         current = poi;

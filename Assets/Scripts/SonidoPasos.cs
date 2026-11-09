@@ -2,7 +2,7 @@ using UnityEngine;
 
 // Pasos del personaje: suena un paso cada cierta distancia recorrida en el piso,
 // con tono y volumen un poco distintos cada vez para que no se oiga repetitivo.
-// Va en el objeto "player" (junto al PlayerController).
+// Va en el objeto "Jugador" (junto al PlayerController).
 [RequireComponent(typeof(AudioSource))]
 public class SonidoPasos : MonoBehaviour
 {
